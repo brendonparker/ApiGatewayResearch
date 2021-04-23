@@ -25,12 +25,32 @@ namespace ApiGatewayResearch
             deployment.AddStage("prod");
             deployment.AddStage("preprod");
 
+
+            // Left for posterity. This is the sample nodejs lambda.
+            //var lambda = new Lambda.Function(this, "MyLambda", new Lambda.FunctionProps
+            //{
+            //    FunctionName = "DemoProxyLambda",
+            //    Code = Lambda.Code.FromAsset("./SampleCDKStack/lambda"),
+            //    Handler = "index.handler",
+            //    Runtime = Lambda.Runtime.NODEJS_14_X,
+            //    CurrentVersionOptions = new Lambda.VersionOptions
+            //    {
+            //        RemovalPolicy = RemovalPolicy.RETAIN,
+            //        RetryAttempts = 1,
+            //    },
+            //    Environment = new Dictionary<string, string>
+            //    {
+            //        {  "CodeVersionString", "0.0.8" }
+            //    }
+            //});
+
             var lambda = new Lambda.Function(this, "MyLambda", new Lambda.FunctionProps
             {
                 FunctionName = "DemoProxyLambda",
-                Code = Lambda.Code.FromAsset("./SampleCDKStack/lambda"),
-                Handler = "index.handler",
-                Runtime = Lambda.Runtime.NODEJS_14_X,
+                Code = Lambda.Code.FromAsset("./LambdaSource"),
+                Handler = "WebAppLambda::WebAppLambda.LambdaEntryPoint::FunctionHandlerAsync",
+                Runtime = Lambda.Runtime.DOTNET_CORE_3_1,
+                MemorySize = 1024,
                 CurrentVersionOptions = new Lambda.VersionOptions
                 {
                     RemovalPolicy = RemovalPolicy.RETAIN,
@@ -38,9 +58,11 @@ namespace ApiGatewayResearch
                 },
                 Environment = new Dictionary<string, string>
                 {
-                    {  "CodeVersionString", "0.0.8" }
+                    {  "CodeVersionString", "0.0.4" }
                 }
             });
+
+            lambda.Role.AddManagedPolicy(IAM.ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBReadOnlyAccess"));
 
             lambda.CurrentVersion.AddAlias("preprod");
 

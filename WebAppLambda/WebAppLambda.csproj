@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>9af43807-36d4-4f81-8057-71f8a53a26b2</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="6.0.0" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.0.14" />
+  </ItemGroup>
+
+
+</Project>
