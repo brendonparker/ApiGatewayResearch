@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGatewayResearch", "ApiGatewayResearch\ApiGatewayResearch.csproj", "{E59A01B1-932C-4F15-B60D-D563B1AF66C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleCDKStack", "SampleCDKStack\SampleCDKStack.csproj", "{E59A01B1-932C-4F15-B60D-D563B1AF66C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

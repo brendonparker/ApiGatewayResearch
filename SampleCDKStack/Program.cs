@@ -10,7 +10,7 @@ namespace ApiGatewayResearch
         public static void Main(string[] args)
         {
             var app = new App();
-            new ApiGatewayResearchStack(app, "ApiGatewayResearchStack");
+            new ApiGatewayCDKStack(app, "ApiGatewayCDKStack");
             app.Synth();
         }
     }
