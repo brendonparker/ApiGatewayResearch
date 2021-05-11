@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using System;
+using Serilog;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Serilog.Formatting.Elasticsearch;
 
 namespace WebAppLambda
 {
@@ -17,6 +16,13 @@ namespace WebAppLambda
         protected override void Init(IWebHostBuilder builder)
         {
             builder
+                .UseSerilog((ctx, config) =>
+                {
+                    config
+                    .MinimumLevel.Information()
+                    .Enrich.FromLogContext()
+                    .WriteTo.Console(new ElasticsearchJsonFormatter());
+                })
                 .UseStartup<Startup>();
         }
     }

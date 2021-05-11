@@ -3,7 +3,6 @@ using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,7 +19,8 @@ namespace WebAppLambda
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            AWSXRayRecorder.RegisterLogger(Amazon.LoggingOptions.Console);
+            // To enable logging for AWSXRayRecorder for troubleshooting:
+            //AWSXRayRecorder.RegisterLogger(Amazon.LoggingOptions.Console);
         }
 
         public IConfiguration Configuration { get; }
