@@ -38,6 +38,7 @@ namespace ApiGatewayResearch
                     RemovalPolicy = RemovalPolicy.RETAIN,
                     RetryAttempts = 1,
                 },
+                Tracing = Lambda.Tracing.ACTIVE,
                 Environment = new Dictionary<string, string>
                 {
                     {  "CodeVersionString", "0.0.13" }
