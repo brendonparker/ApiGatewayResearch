@@ -1,0 +1,24 @@
+﻿@model List<SampleTableEntry>
+<h1>Welcome to the Index Page</h1>
+<a href="@Url.Action("Add")" class="ui button">Add</a>
+<table class="ui table">
+    <thead>
+        <tr>
+            <th>Partition Key</th>
+            <th>Sort Key</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in Model)
+        {
+        <tr>
+            <td>@entry.PartitionKey</td>
+            <td>@entry.SortKey</td>
+            <td>
+                <a href="@Url.Action("Delete", new { pk = entry.PartitionKey, sk = entry.SortKey })">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

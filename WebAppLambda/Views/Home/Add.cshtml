@@ -1,0 +1,13 @@
+﻿@model SampleTableEntry
+
+<form class="ui form" method="post" action="@Url.Action("Save")">
+    <div class="field">
+        <label>Partition Key</label>
+        <input type="text" name="@nameof(Model.PartitionKey)" placeholder="Partition Key" />
+    </div>
+    <div class="field">
+        <label>Sort Key</label>
+        <input type="text" name="@nameof(Model.SortKey)" placeholder="Sort Key" />
+    </div>
+    <button type="submit" class="ui button">Submit</button>
+</form>

@@ -1,6 +1,4 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,21 +12,20 @@ namespace WebAppLambda.Controllers
     public class SampleTableController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly IAmazonDynamoDB _dynamoDbClient;
+        private readonly ISampleTableRepository _sampleTableRepo;
 
         public SampleTableController(
             ILogger<SampleTableController> logger,
-            IAmazonDynamoDB dynamoDbClient)
+            ISampleTableRepository sampleTableRepo)
         {
             _logger = logger;
-            _dynamoDbClient = dynamoDbClient;
+            _sampleTableRepo = sampleTableRepo;
         }
 
         [HttpGet]
-        public async Task<List<ShipTestTable>> Get(bool delay = false)
+        public async Task<List<SampleTableEntry>> Get(bool delay = false)
         {
-            var context = new DynamoDBContext(_dynamoDbClient);
-
+            var res = await _sampleTableRepo.GetAllAsync();
             if (delay)
             {
                 var recorder = new Amazon.XRay.Recorder.Core.AWSXRayRecorder();
@@ -37,47 +34,33 @@ namespace WebAppLambda.Controllers
                 recorder.EndSubsegment();
             }
 
-            var asyncSearch = context.ScanAsync<ShipTestTable>(Enumerable.Empty<ScanCondition>());
-
-            var results = await asyncSearch.GetNextSetAsync();
-
-            return results;
+            return res;
         }
 
-        [HttpGet("partiql/{id}")]
-        public async Task<List<ShipTestTable>> Get(string id)
-        {
-            var res = await _dynamoDbClient.ExecuteStatementAsync(new Amazon.DynamoDBv2.Model.ExecuteStatementRequest
-            {
-                Statement = "SELECT * FROM SampleTable WHERE PartitionKey = ?",
-                Parameters = new List<Amazon.DynamoDBv2.Model.AttributeValue>
-                {
-                    new Amazon.DynamoDBv2.Model.AttributeValue
-                    {
-                        S = id
-                    }
-                }
-            });
+        //[HttpGet("partiql/{id}")]
+        //public async Task<SampleTableEntry> Get(string id)
+        //{
+        //    var res = await _dynamoDbClient.ExecuteStatementAsync(new Amazon.DynamoDBv2.Model.ExecuteStatementRequest
+        //    {
+        //        Statement = "SELECT * FROM SampleTable WHERE PartitionKey = ?",
+        //        Parameters = new List<Amazon.DynamoDBv2.Model.AttributeValue>
+        //        {
+        //            new Amazon.DynamoDBv2.Model.AttributeValue
+        //            {
+        //                S = id
+        //            }
+        //        }
+        //    });
 
-            return res.Items.ConvertAll(x =>
-            {
-                var doc = Amazon.DynamoDBv2.DocumentModel.Document.FromAttributeMap(x);
-                return new ShipTestTable
-                {
-                    PartitionKey = doc[nameof(ShipTestTable.PartitionKey)],
-                    SortKey = doc[nameof(ShipTestTable.SortKey)],
-                };
-            });
-        }
-    }
-
-    [DynamoDBTable("SampleTable")]
-    public class ShipTestTable
-    {
-        [DynamoDBHashKey("PartitionKey")]
-        public string PartitionKey { get; set; }
-
-        [DynamoDBRangeKey("SortKey")]
-        public string SortKey { get; set; }
+        //    return res.Items.ConvertAll(x =>
+        //    {
+        //        var doc = Amazon.DynamoDBv2.DocumentModel.Document.FromAttributeMap(x);
+        //        return new ShipTestTable
+        //        {
+        //            PartitionKey = doc[nameof(ShipTestTable.PartitionKey)],
+        //            SortKey = doc[nameof(ShipTestTable.SortKey)],
+        //        };
+        //    });
+        //}
     }
 }
