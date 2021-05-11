@@ -33,6 +33,7 @@ namespace ApiGatewayResearch
                 Handler = "WebAppLambda::WebAppLambda.LambdaEntryPoint::FunctionHandlerAsync",
                 Runtime = Lambda.Runtime.DOTNET_CORE_3_1,
                 MemorySize = 1024,
+                Timeout = Duration.Seconds(30),
                 CurrentVersionOptions = new Lambda.VersionOptions
                 {
                     RemovalPolicy = RemovalPolicy.RETAIN,
