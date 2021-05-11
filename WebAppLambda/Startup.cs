@@ -1,5 +1,4 @@
 using Amazon.DynamoDBv2;
-using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,9 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebAppLambda
 {
@@ -33,6 +29,10 @@ namespace WebAppLambda
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.AddAWSService<IAmazonDynamoDB>();
 
+            services.AddTransient<ISampleTableRepository, SampleTableRepository>();
+
+            services.AddSwaggerGen();
+
             AWSSDKHandler.RegisterXRayForAllServices();
         }
 
@@ -45,6 +45,14 @@ namespace WebAppLambda
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
             app.UseRouting();
 
