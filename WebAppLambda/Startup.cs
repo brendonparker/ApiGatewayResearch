@@ -1,3 +1,6 @@
+using Amazon.DynamoDBv2;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +20,7 @@ namespace WebAppLambda
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            AWSXRayRecorder.RegisterLogger(Amazon.LoggingOptions.Console);
         }
 
         public IConfiguration Configuration { get; }
@@ -25,11 +29,18 @@ namespace WebAppLambda
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+            services.AddAWSService<IAmazonDynamoDB>();
+
+            AWSSDKHandler.RegisterXRayForAllServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseXRay("MyApp", Configuration);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

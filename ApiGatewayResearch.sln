@@ -5,7 +5,13 @@ VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleCDKStack", "SampleCDKStack\SampleCDKStack.csproj", "{E59A01B1-932C-4F15-B60D-D563B1AF66C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppLambda", "WebAppLambda\WebAppLambda.csproj", "{35EE1F4F-AB78-4D01-AD73-3E2D797D4F5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppLambda", "WebAppLambda\WebAppLambda.csproj", "{35EE1F4F-AB78-4D01-AD73-3E2D797D4F5C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C06D8DE-038E-4623-8F0D-C8BACAD68122}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		SampleApiGatwayPayload.json = SampleApiGatwayPayload.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

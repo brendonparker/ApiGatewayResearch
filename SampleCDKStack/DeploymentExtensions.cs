@@ -12,6 +12,7 @@ namespace ApiGatewayResearch
             {
                 Deployment = deployment,
                 StageName = name,
+                TracingEnabled = true,
                 Variables = new Dictionary<string, string>
                 {
                     { "lambdaAlias", name }

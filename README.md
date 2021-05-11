@@ -1,15 +1,17 @@
-# Welcome to your CDK C# project!
-
-This is a blank project for C# development with CDK.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+# Sample dotnet core app using API Gateway and Lambdas
 
 It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
 
+## Deployment
+
+First, run: `dotnet publish WebAppLambda/WebAppLambda.csproj -o ./LambdaSource/` to create the source artifacts to be used by the lambda function.
+
+Then, run: `cdk deploy` to deploy the stack. You may need to add the `--profile` option if you need to use a profile other than default.
 
 ## Useful commands
 
-* `set AWS_PROFILE=ICS-Spikes_Admin` set AWS profile
+`dotnet publish WebAppLambda/WebAppLambda.csproj -o ./LambdaSource/`
+
 * `dotnet build src` compile this app
 * `cdk deploy`       deploy this stack to your default AWS account/region
 * `cdk diff`         compare deployed stack with current state

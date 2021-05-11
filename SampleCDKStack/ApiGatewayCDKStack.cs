@@ -2,6 +2,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using IAM = Amazon.CDK.AWS.IAM;
 using Lambda = Amazon.CDK.AWS.Lambda;
+using DynamoDB = Amazon.CDK.AWS.DynamoDB;
 using System.Collections.Generic;
 
 namespace ApiGatewayResearch
@@ -25,25 +26,6 @@ namespace ApiGatewayResearch
             deployment.AddStage("prod");
             deployment.AddStage("preprod");
 
-
-            // Left for posterity. This is the sample nodejs lambda.
-            //var lambda = new Lambda.Function(this, "MyLambda", new Lambda.FunctionProps
-            //{
-            //    FunctionName = "DemoProxyLambda",
-            //    Code = Lambda.Code.FromAsset("./SampleCDKStack/lambda"),
-            //    Handler = "index.handler",
-            //    Runtime = Lambda.Runtime.NODEJS_14_X,
-            //    CurrentVersionOptions = new Lambda.VersionOptions
-            //    {
-            //        RemovalPolicy = RemovalPolicy.RETAIN,
-            //        RetryAttempts = 1,
-            //    },
-            //    Environment = new Dictionary<string, string>
-            //    {
-            //        {  "CodeVersionString", "0.0.8" }
-            //    }
-            //});
-
             var lambda = new Lambda.Function(this, "MyLambda", new Lambda.FunctionProps
             {
                 FunctionName = "DemoProxyLambda",
@@ -58,7 +40,7 @@ namespace ApiGatewayResearch
                 },
                 Environment = new Dictionary<string, string>
                 {
-                    {  "CodeVersionString", "0.0.4" }
+                    {  "CodeVersionString", "0.0.13" }
                 }
             });
 
@@ -69,6 +51,21 @@ namespace ApiGatewayResearch
             api.Root.AddProxy(new ProxyResourceOptions
             {
                 DefaultIntegration = StageSpecificLambda(lambda)
+            });
+
+            new DynamoDB.Table(this, "SampleTable", new DynamoDB.TableProps
+            {
+                TableName = "SampleTable",
+                PartitionKey = new DynamoDB.Attribute
+                {
+                    Name = "PartitionKey",
+                    Type = DynamoDB.AttributeType.STRING
+                },
+                SortKey = new DynamoDB.Attribute
+                {
+                    Name = "SortKey",
+                    Type = DynamoDB.AttributeType.STRING
+                }
             });
         }
 
