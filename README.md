@@ -17,6 +17,9 @@ Then, run: `cdk deploy` to deploy the stack. You may need to add the `--profile`
 * `cdk diff`         compare deployed stack with current state
 * `cdk synth`        emits the synthesized CloudFormation template
 
+
+To work around an issue where the aws s3 sync assigns the wrong Content-Type metadata (only on Windows?) we upload the .js files separately so we can specify the content-type.
+
 ```
 aws s3 sync build\ s3://test-rfsship-content/content/ --profile RFS_Ship_Admin --exclude *.js
 aws s3 sync build\ s3://test-rfsship-content/content/ --profile RFS_Ship_Admin --exclude * --include *.js --content-type application/javascript
