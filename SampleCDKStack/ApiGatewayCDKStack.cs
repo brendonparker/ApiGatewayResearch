@@ -28,8 +28,6 @@ namespace ApiGatewayResearch
                 }
             });
 
-            api.LatestDeployment.AddStage("prod");
-
             //var deployment = new Deployment(this, "preprd", new DeploymentProps
             //{
             //    Api = api,
