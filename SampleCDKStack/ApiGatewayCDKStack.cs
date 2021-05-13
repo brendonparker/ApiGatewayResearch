@@ -4,6 +4,8 @@ using IAM = Amazon.CDK.AWS.IAM;
 using Lambda = Amazon.CDK.AWS.Lambda;
 using DynamoDB = Amazon.CDK.AWS.DynamoDB;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace ApiGatewayResearch
 {
@@ -14,17 +16,44 @@ namespace ApiGatewayResearch
             var api = new RestApi(this, "MyApi2", new RestApiProps
             {
                 RestApiName = "my-api2",
-                Deploy = false
+                Deploy = true,
+                DeployOptions = new StageOptions
+                {
+                    StageName = "preprod",
+                    Variables = new Dictionary<string, string>
+                    {
+                        { "lambdaAlias", "preprod" }
+                    },
+                    TracingEnabled = true
+                }
             });
 
-            var deployment = new Deployment(this, "preprd", new DeploymentProps
+            api.LatestDeployment.AddStage("prod");
+
+            //var deployment = new Deployment(this, "preprd", new DeploymentProps
+            //{
+            //    Api = api,
+            //    Description = "Initial Deployment",
+            //    RetainDeployments
+            //});
+
+            //deployment.AddStage("prod");
+            //deployment.AddStage("preprod");
+
+            var ddbTable = new DynamoDB.Table(this, "SampleTable", new DynamoDB.TableProps
             {
-                Api = api,
-                Description = "Initial Deployment"
+                TableName = "SampleTable",
+                PartitionKey = new DynamoDB.Attribute
+                {
+                    Name = "PartitionKey",
+                    Type = DynamoDB.AttributeType.STRING
+                },
+                SortKey = new DynamoDB.Attribute
+                {
+                    Name = "SortKey",
+                    Type = DynamoDB.AttributeType.STRING
+                }
             });
-
-            deployment.AddStage("prod");
-            deployment.AddStage("preprod");
 
             var lambda = new Lambda.Function(this, "MyLambda", new Lambda.FunctionProps
             {
@@ -32,7 +61,7 @@ namespace ApiGatewayResearch
                 Code = Lambda.Code.FromAsset("./LambdaSource"),
                 Handler = "WebAppLambda::WebAppLambda.LambdaEntryPoint::FunctionHandlerAsync",
                 Runtime = Lambda.Runtime.DOTNET_CORE_3_1,
-                MemorySize = 1024,
+                MemorySize = 1536,
                 Timeout = Duration.Seconds(30),
                 CurrentVersionOptions = new Lambda.VersionOptions
                 {
@@ -46,28 +75,60 @@ namespace ApiGatewayResearch
                 }
             });
 
-            lambda.Role.AddManagedPolicy(IAM.ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBReadOnlyAccess"));
+            lambda.Role.AttachInlinePolicy(new IAM.Policy(this, "lambdaiam", new IAM.PolicyProps
+            {
+                PolicyName = "DynamoDbAccess",
+                Document = new IAM.PolicyDocument(new IAM.PolicyDocumentProps
+                {
+                    Statements = new[]
+                    {
+                        new IAM.PolicyStatement(new IAM.PolicyStatementProps
+                        {
+                            Effect = IAM.Effect.ALLOW,
+                            Actions = new []
+                            {
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:PartiQLUpdate",
+                                "dynamodb:Scan",
+                                "dynamodb:ListTagsOfResource",
+                                "dynamodb:Query",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:PartiQLSelect",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:PartiQLInsert",
+                                "dynamodb:GetItem",
+                                "dynamodb:GetRecords",
+                                "dynamodb:PartiQLDelete"
+                            },
+                            Resources = new []
+                            {
+                                ddbTable.TableArn
+                            }
+                        })
+                    }
+                })
+            }));
 
             lambda.CurrentVersion.AddAlias("preprod");
 
+            var awsIntegration = StageSpecificLambda(lambda);
+
             api.Root.AddProxy(new ProxyResourceOptions
             {
-                DefaultIntegration = StageSpecificLambda(lambda)
+                DefaultIntegration = awsIntegration
             });
 
-            new DynamoDB.Table(this, "SampleTable", new DynamoDB.TableProps
+            api.Root.AddMethod("GET", awsIntegration);
+
+            new RouteToS3(this, "s3route", new RouteToS3Props
             {
-                TableName = "SampleTable",
-                PartitionKey = new DynamoDB.Attribute
-                {
-                    Name = "PartitionKey",
-                    Type = DynamoDB.AttributeType.STRING
-                },
-                SortKey = new DynamoDB.Attribute
-                {
-                    Name = "SortKey",
-                    Type = DynamoDB.AttributeType.STRING
-                }
+                Api = api,
+                PathInApiGateway = "content",
+                S3Bucket = "test-rfsship-content",
+                S3Prefix = "content",
             });
         }
 
@@ -84,10 +145,10 @@ namespace ApiGatewayResearch
                 new IAM.PolicyStatement(new IAM.PolicyStatementProps
                 {
                     Actions = new[] { "lambda:InvokeFunction" },
-                    Resources = new[] 
-                    { 
-                        lambda.FunctionArn, 
-                        $"{lambda.FunctionArn}:*" 
+                    Resources = new[]
+                    {
+                        lambda.FunctionArn,
+                        $"{lambda.FunctionArn}:*"
                     },
                     Effect = IAM.Effect.ALLOW
                 })

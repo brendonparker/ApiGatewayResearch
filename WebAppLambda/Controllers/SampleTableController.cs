@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace WebAppLambda.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SampleTableController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -46,9 +46,9 @@ namespace WebAppLambda.Controllers
         }
 
         [HttpDelete]
-        public async Task Delete(string pk, string sk)
+        public async Task Delete(SampleTableEntry entry)
         {
-            await _sampleTableRepo.DeleteAsync(pk, sk);
+            await _sampleTableRepo.DeleteAsync(entry.PartitionKey, entry.SortKey);
         }
     }
 }

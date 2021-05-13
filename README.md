@@ -17,6 +17,11 @@ Then, run: `cdk deploy` to deploy the stack. You may need to add the `--profile`
 * `cdk diff`         compare deployed stack with current state
 * `cdk synth`        emits the synthesized CloudFormation template
 
+```
+aws s3 sync build\ s3://test-rfsship-content/content/ --profile RFS_Ship_Admin --exclude *.js
+aws s3 sync build\ s3://test-rfsship-content/content/ --profile RFS_Ship_Admin --exclude * --include *.js --content-type application/javascript
+```
+
 ## AWS Lambda Power Tuning
 
 Useful tool for benchmarking lambda performance:
